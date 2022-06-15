@@ -3,7 +3,7 @@
  */
 // SPDX-License-Identifier: Apache-2.0
 
-#pragma once
+//#pragma once
 
 #include "ReadBarcode.h"
 
@@ -289,9 +289,9 @@ public:
         m_videoSink = qobject_cast<QVideoSink*>(videoSink);
         qDebug() << "videoSink setted";
         connect(m_videoSink, &QVideoSink::videoFrameChanged, this, &VideoFilter::process, Qt::DirectConnection);
-//        m_waitingTimer.setInterval(200);
-//        QObject::connect(&m_waitingTimer, SIGNAL(elapsed()), this, SLOT(stopWaiting()) );
-//        m_waitingTimer.start();
+        m_waitingTimer.setInterval(200);
+        QObject::connect(&m_waitingTimer, SIGNAL(elapsed()), this, SLOT(stopWaiting()) );
+        m_waitingTimer.start();
     }
 
 	// TODO: find out how to properly expose QFlags to QML
@@ -319,7 +319,7 @@ public:
 public slots:
     ZXingQt::Result process(const QVideoFrame& image)
 	{
-//        if(!m_decoding /*&& !m_waiting*/){
+        if(/*!m_decoding /*&& */!m_waiting){
 //            m_waitingTimer.start();
 //            m_decoding = true;
 //            m_waiting = true;
@@ -338,12 +338,11 @@ public slots:
                 emit foundBarcode(res);
 //            m_decoding = false;
             return res;
-//        }
+        }
 	}
-//    void stopWaiting(){
-//        m_waiting = false;
-//        m_decoding = false;
-//    }
+    void stopWaiting(){
+        m_waiting = false;
+    }
 
 signals:
     void newResult(ZXingQt::Result result);
@@ -354,7 +353,7 @@ private:
 
 //    bool m_decoding;
 //    bool m_waiting;
-//    QTimer m_waitingTimer;
+    QTimer m_waitingTimer;
 };
 
 #undef ZX_PROPERTY
